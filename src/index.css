@@ -185,12 +185,18 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .day-cell.is-today .date-number { color: #b47f77; text-decoration: underline; text-decoration-color: rgba(180,127,119,.45); text-underline-offset: 3px; }
 .day-cell-button { display: block; width: 100%; height: 100%; border: 0; background: transparent; padding: 0; text-align: left; }
 .date-number { display: block; color: #a9ad88; font-family: var(--app-font-serif); font-size: 16px; line-height: 1; }
+.holiday-label {
+  display: block; overflow: hidden; margin-top: 4px; color: #b47f77; font-size: 8px;
+  font-weight: 600; line-height: 1.15; letter-spacing: .01em; white-space: normal;
+}
 .day-preview { display: block; overflow: hidden; margin-top: 5px; color: rgba(117,108,97,.76); font-size: 9px; line-height: 1.25; white-space: pre-wrap; }
 .note-mark { position: absolute; right: 6px; top: 7px; width: 5px; height: 5px; border-radius: 50%; background: #d9b8b2; }
 
 .lower-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; margin-top: 21px; }
 .selected-panel, .reflection-panel { min-width: 0; }
 .selected-date { margin: 0 0 8px; font-family: var(--app-font-serif); font-size: 23px; font-weight: 600; color: #756c61; }
+.selected-holiday { display: flex; align-items: baseline; gap: 7px; margin: -3px 0 8px; color: #b47f77; font-family: var(--app-font-serif); font-size: 17px; }
+.selected-holiday span { color: #a9ad88; font-family: var(--app-font-sans); font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
 .day-note { width: 100%; height: 74px; resize: vertical; border: 1px solid rgba(117,108,97,.32); border-radius: 2px; padding: 9px 10px; background: rgba(255,255,255,.2); font-size: 12px; line-height: 1.55; outline: 0; }
 .panel-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 7px; }
 .save-note-button, .clear-note-button, .reset-button {

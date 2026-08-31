@@ -10,6 +10,10 @@ type MonthData = {
   reflections: boolean[];
 };
 type StoredMonths = Record<string, MonthData>;
+type IndianHoliday = {
+  key: string;
+  name: string;
+};
 
 const STORAGE_KEY = "a-gentle-month:planner:v1";
 const MONTHS = Array.from({ length: 12 }, (_, index) =>
@@ -17,6 +21,25 @@ const MONTHS = Array.from({ length: 12 }, (_, index) =>
 );
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const REFLECTIONS = ["I made room for what mattered", "I noticed a small beautiful thing", "I can carry one kindness forward"];
+const INDIAN_HOLIDAYS: IndianHoliday[] = [
+  { key: "-01-26", name: "Republic Day" },
+  { key: "-08-15", name: "Independence Day" },
+  { key: "-10-02", name: "Gandhi Jayanti" },
+  { key: "2026-02-15", name: "Maha Shivaratri" },
+  { key: "2026-03-04", name: "Holi" },
+  { key: "2026-03-20", name: "Eid al-Fitr" },
+  { key: "2026-04-02", name: "Mahavir Jayanti" },
+  { key: "2026-04-03", name: "Good Friday" },
+  { key: "2026-05-01", name: "Buddha Purnima" },
+  { key: "2026-05-27", name: "Eid al-Adha" },
+  { key: "2026-06-26", name: "Muharram" },
+  { key: "2026-09-04", name: "Janmashtami" },
+  { key: "2026-09-14", name: "Ganesh Chaturthi" },
+  { key: "2026-10-20", name: "Dussehra" },
+  { key: "2026-11-08", name: "Diwali" },
+  { key: "2026-11-24", name: "Guru Nanak Jayanti" },
+  { key: "2026-12-25", name: "Christmas Day" },
+];
 const defaultData = (): MonthData => ({
   goals: [
     { text: "", complete: false },
@@ -35,6 +58,11 @@ function monthKey(date: Date) {
 
 function dateKey(year: number, month: number, day: number) {
   return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function holidayForDate(key: string) {
+  const fixedMatch = INDIAN_HOLIDAYS.find((holiday) => holiday.key === key.slice(4));
+  return fixedMatch ?? INDIAN_HOLIDAYS.find((holiday) => holiday.key === key);
 }
 
 function readStorage(): StoredMonths {
@@ -95,6 +123,7 @@ function App() {
       return { day: dateNumber, key: dateKey(year, month, dateNumber), muted: false };
     });
   }, [month, year]);
+  const selectedHoliday = holidayForDate(selectedKey);
 
   useEffect(() => {
     const stored = readStorage()[key];
@@ -234,14 +263,15 @@ function App() {
         <section aria-labelledby="calendar-title">
           <div className="calendar-heading">
             <h2 className="section-label" id="calendar-title">The calendar</h2>
-            <span className="calendar-hint">Select a day to leave a note</span>
+            <span className="calendar-hint">Indian holidays are marked · select a day to leave a note</span>
           </div>
           <div className="month-grid" role="grid" aria-label={`${monthLabel} calendar`}>
             {WEEKDAYS.map((day) => <div className="weekday" role="columnheader" key={day}>{day}</div>)}
             {calendarCells.map((cell) => (
               <div className={`day-cell ${cell.muted ? "is-muted" : ""} ${selectedKey === cell.key ? "is-selected" : ""} ${todayKey === cell.key ? "is-today" : ""}`} role="gridcell" key={cell.key}>
-                <button className="day-cell-button" type="button" onClick={() => selectDay(cell.key)} aria-label={`${formatSelectedDate(cell.key)}${cell.muted ? " (outside selected month)" : ""}`} aria-pressed={selectedKey === cell.key} data-testid={`button-day-${cell.key}`}>
+                <button className="day-cell-button" type="button" onClick={() => selectDay(cell.key)} aria-label={`${formatSelectedDate(cell.key)}${holidayForDate(cell.key) ? `, ${holidayForDate(cell.key)?.name}` : ""}${cell.muted ? " (outside selected month)" : ""}`} aria-pressed={selectedKey === cell.key} data-testid={`button-day-${cell.key}`}>
                   <span className="date-number">{cell.day}</span>
+                  {holidayForDate(cell.key) && <span className="holiday-label">{holidayForDate(cell.key)?.name}</span>}
                   {data.notes[cell.key] && <span className="day-preview">{data.notes[cell.key]}</span>}
                   {data.notes[cell.key] && <span className="note-mark" aria-label="Has note" />}
                 </button>
@@ -254,6 +284,7 @@ function App() {
           <section className="selected-panel" aria-labelledby="selected-day-title">
             <h2 className="section-label" id="selected-day-title">A note for the day</h2>
             <p className="selected-date" data-testid="text-selected-date">{formatSelectedDate(selectedKey)}</p>
+            {selectedHoliday && <p className="selected-holiday"><span>India holiday</span>{selectedHoliday.name}</p>}
             <textarea className="day-note" value={dayDraft} onChange={(event) => setDayDraft(event.target.value)} placeholder="What would you like to remember?" aria-label={`Note for ${formatSelectedDate(selectedKey)}`} data-testid="textarea-day-note" />
             <div className="panel-actions">
               <span className="calendar-hint">Your notes stay on this device.</span>
